@@ -96,3 +96,24 @@ export function createURL(endpoint: string, params = {}, auth = true): string {
 
   return url.toString();
 }
+
+export function createShareURL(endpoint: string, params = {}, auth = true): string {
+  const authStore = useAuthStore();
+
+  let prefix = baseURL;
+  if (!prefix.endsWith("/")) {
+    prefix = prefix + "/";
+  }
+  const url = new URL(prefix + encodePath(endpoint), origin.replace(/filebrowser/, "share"));
+
+  const searchParams: SearchParams = {
+    ...(auth && { auth: authStore.jwt }),
+    ...params,
+  };
+
+  for (const key in searchParams) {
+    url.searchParams.set(key, searchParams[key]);
+  }
+
+  return url.toString();
+}
